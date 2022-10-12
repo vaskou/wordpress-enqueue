@@ -15,12 +15,13 @@ abstract class Enqueue {
 	}
 
 	/**
-	 * @param $handle string
-	 * @param $relative_path string
-	 * @param $deps string[]
+	 * @param $args array
 	 */
-	protected function _register_style( $handle, $relative_path, $deps = array() ) {
-		$version = $this->_get_file_version( $relative_path );
+	protected function _register_style( $args ) {
+		$parsed_args = $this->_parse_style_args( $args );
+
+		extract( $parsed_args );
+
 		wp_register_style( $handle, $this->url . $relative_path, $deps, $version );
 	}
 
@@ -45,6 +46,19 @@ abstract class Enqueue {
 		wp_enqueue_style( $handle, $src, $deps, $version );
 	}
 
+	/**
+	 * @param $handle string
+	 * @param $relative_path string
+	 * @param $deps string[]
+	 */
+	protected function _enqueue_script( $handle, $relative_path = '', $deps = array() ) {
+		$version = $this->_get_file_version( $relative_path );
+
+		$src = ! empty( $relative_path ) ? $this->url . $relative_path : '';
+
+		wp_enqueue_script( $handle, $src, $deps, $version, true );
+	}
+
 	protected function _parse_style_args( $args ) {
 		$relative_path = ! empty( $args['relative_path'] ) ? $args['relative_path'] : '';
 
@@ -57,19 +71,6 @@ abstract class Enqueue {
 		$parsed_args['version'] = $this->_get_file_version( $parsed_args['relative_path'] );
 
 		return $parsed_args;
-	}
-
-	/**
-	 * @param $handle string
-	 * @param $relative_path string
-	 * @param $deps string[]
-	 */
-	protected function _enqueue_script( $handle, $relative_path = '', $deps = array() ) {
-		$version = $this->_get_file_version( $relative_path );
-
-		$src = ! empty( $relative_path ) ? $this->url . $relative_path : '';
-
-		wp_enqueue_script( $handle, $src, $deps, $version, true );
 	}
 
 	/**
