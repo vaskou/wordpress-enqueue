@@ -1,0 +1,18 @@
+{
+    "name": "vaskou/wordpress-enqueue",
+    "description": "Wordpress Enqueue",
+    "type": "library",
+    "version": "v1.0.0",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Vasilis Koutsopoulos",
+            "email": "vaskou@hotmail.com"
+        }
+    ],
+    "require": {},"autoload": {
+    "files": [
+        "WordpressEnqueue/bootstrap_1_0_0.php"
+    ]
+}
+}
