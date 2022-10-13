@@ -2,7 +2,7 @@
     "name": "vaskou/wordpress-enqueue",
     "description": "Wordpress Enqueue",
     "type": "library",
-    "version": "v1.0.0-dev",
+    "version": "v1.0.0",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
