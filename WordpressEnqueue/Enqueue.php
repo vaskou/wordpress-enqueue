@@ -22,17 +22,18 @@ abstract class Enqueue {
 
 		extract( $parsed_args );
 
-		wp_register_style( $handle, $this->url . $relative_path, $deps, $version );
+		wp_register_style( $handle, $src, $deps, $version, $media );
 	}
 
 	/**
-	 * @param $handle string
-	 * @param $relative_path string
-	 * @param $deps string[]
+	 * @param $args array
 	 */
-	protected function _register_script( $handle, $relative_path, $deps = array() ) {
-		$version = $this->_get_file_version( $relative_path );
-		wp_register_script( $handle, $this->url . $relative_path, $deps, $version, true );
+	protected function _register_script( $args ) {
+		$parsed_args = $this->_parse_script_args( $args );
+
+		extract( $parsed_args );
+
+		wp_register_script( $handle, $src, $deps, $version, $in_footer );
 	}
 
 	/**
@@ -43,32 +44,50 @@ abstract class Enqueue {
 
 		extract( $parsed_args );
 
-		wp_enqueue_style( $handle, $src, $deps, $version );
+		wp_enqueue_style( $handle, $src, $deps, $version, $media );
 	}
 
 	/**
-	 * @param $handle string
-	 * @param $relative_path string
-	 * @param $deps string[]
+	 * @param $args array
 	 */
-	protected function _enqueue_script( $handle, $relative_path = '', $deps = array() ) {
-		$version = $this->_get_file_version( $relative_path );
+	protected function _enqueue_script( $args ) {
+		$parsed_args = $this->_parse_script_args( $args );
 
-		$src = ! empty( $relative_path ) ? $this->url . $relative_path : '';
+		extract( $parsed_args );
 
-		wp_enqueue_script( $handle, $src, $deps, $version, true );
+		wp_enqueue_script( $handle, $src, $deps, $version, $in_footer );
 	}
 
 	protected function _parse_style_args( $args ) {
+		$parsed_args = $this->_parse_args( $args );
+
+		$parsed_args['media'] = ! empty( $args['media'] ) ? $args['media'] : 'all';
+
+		return $parsed_args;
+	}
+
+	protected function _parse_script_args( $args ) {
+		$parsed_args = $this->_parse_args( $args );
+
+		$parsed_args['in_footer'] = ! empty( $args['in_footer'] ) ? $args['in_footer'] : true;
+
+		return $parsed_args;
+	}
+
+	protected function _parse_args( $args ) {
 		$relative_path = ! empty( $args['relative_path'] ) ? $args['relative_path'] : '';
+
+		$url = ! empty( $relative_path ) ? $this->url . $relative_path : '';
+
+		$url = ! empty( $args['url'] ) ? $args['url'] : $url;
 
 		$parsed_args['handle'] = ! empty( $args['handle'] ) ? $args['handle'] : '';
 
-		$parsed_args['src'] = ! empty( $relative_path ) ? $this->url . $relative_path : '';
+		$parsed_args['src'] = $url;
 
 		$parsed_args['deps'] = ! empty( $args['deps'] ) ? $args['deps'] : [];
 
-		$parsed_args['version'] = $this->_get_file_version( $parsed_args['relative_path'] );
+		$parsed_args['version'] = $this->_get_file_version( $relative_path );
 
 		return $parsed_args;
 	}
