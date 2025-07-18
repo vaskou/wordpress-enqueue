@@ -12,7 +12,7 @@
     ],
     "require": {},"autoload": {
     "files": [
-        "WordpressEnqueue/bootstrap_1_0_0.php"
+        "WordpressEnqueue/bootstrap_1_0_1.php"
     ]
 }
 }
