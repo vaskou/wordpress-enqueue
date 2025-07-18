@@ -72,6 +72,20 @@ abstract class Enqueue {
 		<?php
 	}
 
+	protected function _print_scripts_inline( $args ) {
+		$parsed_args = $this->_parse_style_args( $args );
+
+		extract( $parsed_args );
+
+		if ( ! $this->_file_exists( $relative_path ) ) {
+			return;
+		}
+
+		?>
+        <script id="<?php echo esc_attr( $handle ) . '-js'; ?>"><?php include $this->_get_filename( $relative_path ); ?></script>
+		<?php
+	}
+
 	protected function _parse_style_args( $args ) {
 		$parsed_args = $this->_parse_args( $args );
 
