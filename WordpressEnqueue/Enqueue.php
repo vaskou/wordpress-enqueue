@@ -9,9 +9,9 @@ abstract class Enqueue {
 	private $url;
 
 	protected function __construct( $dir, $url, $version ) {
-		$this->dir     = $dir;
-		$this->url     = $url;
-		$this->version = $version;
+		$this->set_dir( $dir );
+		$this->set_url( $url );
+		$this->set_version( $version );
 	}
 
 	/**
@@ -58,6 +58,20 @@ abstract class Enqueue {
 		wp_enqueue_script( $handle, $src, $deps, $version, $in_footer );
 	}
 
+	protected function _print_styles_inline( $args ) {
+		$parsed_args = $this->_parse_style_args( $args );
+
+		extract( $parsed_args );
+
+		if ( ! $this->_file_exists( $relative_path ) ) {
+			return;
+		}
+
+		?>
+        <style id="<?php echo esc_attr( $handle ) . '-css'; ?>"><?php include $this->_get_file_version( $relative_path ); ?></style>
+		<?php
+	}
+
 	protected function _parse_style_args( $args ) {
 		$parsed_args = $this->_parse_args( $args );
 
@@ -89,6 +103,8 @@ abstract class Enqueue {
 
 		$parsed_args['version'] = $this->_get_file_version( $relative_path );
 
+		$parsed_args['relative_path'] = $relative_path;
+
 		return $parsed_args;
 	}
 
@@ -112,4 +128,68 @@ abstract class Enqueue {
 
 		return $this->version . ( ! empty( $filetime ) ? '-' . $filetime : '' );
 	}
+
+	/**
+	 * @param $relative_path
+	 *
+	 * @return string
+	 */
+	protected function _get_filename( $relative_path ) {
+		return $this->dir . $relative_path;
+	}
+
+	/**
+	 * @param $relative_path
+	 *
+	 * @return bool
+	 */
+	protected function _file_exists( $relative_path ) {
+		$filename = $this->_get_filename( $relative_path );
+
+		return file_exists( $filename );
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_version() {
+		return $this->version;
+	}
+
+	/**
+	 * @param mixed $version
+	 */
+	public function set_version( $version ) {
+		$this->version = $version;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_dir() {
+		return $this->dir;
+	}
+
+	/**
+	 * @param mixed $dir
+	 */
+	public function set_dir( $dir ) {
+		$this->dir = $dir;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_url() {
+		return $this->url;
+	}
+
+	/**
+	 * @param mixed $url
+	 */
+	public function set_url( $url ) {
+		$this->url = $url;
+	}
+
+
 }
