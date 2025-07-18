@@ -1,9 +1,9 @@
 <?php
-if ( ! class_exists( 'WordpressEnqueue_Bootstrap_1_0_1' ) ) {
+if ( ! class_exists( 'WordpressEnqueue_Bootstrap_1_0_2' ) ) {
 
-	class WordpressEnqueue_Bootstrap_1_0_1 {
+	class WordpressEnqueue_Bootstrap_1_0_2 {
 
-		const VERSION = '1.0.1';
+		const VERSION = '1.0.2';
 
 		private static $_instance;
 
@@ -49,5 +49,5 @@ if ( ! class_exists( 'WordpressEnqueue_Bootstrap_1_0_1' ) ) {
 		}
 	}
 
-	WordpressEnqueue_Bootstrap_1_0_1::instance();
+	WordpressEnqueue_Bootstrap_1_0_2::instance();
 }
