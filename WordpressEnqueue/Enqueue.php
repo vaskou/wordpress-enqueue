@@ -68,7 +68,7 @@ abstract class Enqueue {
 		}
 
 		?>
-        <style id="<?php echo esc_attr( $handle ) . '-css'; ?>"><?php include $this->_get_file_version( $relative_path ); ?></style>
+        <style id="<?php echo esc_attr( $handle ) . '-css'; ?>"><?php include $this->_get_filename( $relative_path ); ?></style>
 		<?php
 	}
 
