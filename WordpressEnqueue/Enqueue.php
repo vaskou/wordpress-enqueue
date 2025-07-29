@@ -95,7 +95,7 @@ abstract class Enqueue {
 	}
 
 	protected function _make_inline_style( $inline, $handle, $relative_path ) {
-		if ( ! empty( $inline ) ) {
+		if ( empty( $inline ) ) {
 			return;
 		}
 
@@ -123,7 +123,7 @@ abstract class Enqueue {
 	}
 
 	protected function _make_inline_script( $inline, $handle, $relative_path ) {
-		if ( ! empty( $inline ) ) {
+		if ( empty( $inline ) ) {
 			return;
 		}
 
