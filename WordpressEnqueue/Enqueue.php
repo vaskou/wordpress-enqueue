@@ -106,7 +106,7 @@ abstract class Enqueue {
 		$filename = $this->_get_filename( $relative_path );
 
 		ob_start();
-		include $relative_path;
+		include $filename;
 		$css = ob_get_clean();
 
 		wp_add_inline_style( $handle, $css );
@@ -134,7 +134,7 @@ abstract class Enqueue {
 		$filename = $this->_get_filename( $relative_path );
 
 		ob_start();
-		include $relative_path;
+		include $filename;
 		$css = ob_get_clean();
 
 		wp_add_inline_script( $handle, $css );
