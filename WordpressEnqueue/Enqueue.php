@@ -50,7 +50,7 @@ abstract class Enqueue {
 
 		wp_enqueue_style( $handle, $src, $deps, $version, $media );
 
-		$this->_make_inline_style( $inline, $handle, $relativepath );
+		$this->_make_inline_style( $inline, $handle, $relative_path );
 	}
 
 	/**
@@ -63,7 +63,7 @@ abstract class Enqueue {
 
 		wp_enqueue_script( $handle, $src, $deps, $version, $in_footer );
 
-		$this->_make_inline_script( $inline, $handle, $relativepath );
+		$this->_make_inline_script( $inline, $handle, $relative_path );
 	}
 
 	protected function _print_styles_inline( $args ) {
