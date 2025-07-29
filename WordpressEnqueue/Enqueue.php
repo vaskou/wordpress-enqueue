@@ -23,6 +23,8 @@ abstract class Enqueue {
 		extract( $parsed_args );
 
 		wp_register_style( $handle, $src, $deps, $version, $media );
+
+		$this->_make_inline_style( $inline, $handle, $relative_path );
 	}
 
 	/**
@@ -34,6 +36,8 @@ abstract class Enqueue {
 		extract( $parsed_args );
 
 		wp_register_script( $handle, $src, $deps, $version, $in_footer );
+
+		$this->_make_inline_script( $inline, $handle, $relative_path );
 	}
 
 	/**
@@ -45,6 +49,8 @@ abstract class Enqueue {
 		extract( $parsed_args );
 
 		wp_enqueue_style( $handle, $src, $deps, $version, $media );
+
+		$this->_make_inline_style( $inline, $handle, $relativepath );
 	}
 
 	/**
@@ -56,6 +62,8 @@ abstract class Enqueue {
 		extract( $parsed_args );
 
 		wp_enqueue_script( $handle, $src, $deps, $version, $in_footer );
+
+		$this->_make_inline_script( $inline, $handle, $relativepath );
 	}
 
 	protected function _print_styles_inline( $args ) {
@@ -73,7 +81,7 @@ abstract class Enqueue {
 	}
 
 	protected function _print_scripts_inline( $args ) {
-		$parsed_args = $this->_parse_style_args( $args );
+		$parsed_args = $this->_parse_script_args( $args );
 
 		extract( $parsed_args );
 
@@ -84,6 +92,60 @@ abstract class Enqueue {
 		?>
         <script id="<?php echo esc_attr( $handle ) . '-js'; ?>"><?php include $this->_get_filename( $relative_path ); ?></script>
 		<?php
+	}
+
+	protected function _make_inline_style( $inline, $handle, $relative_path ) {
+		if ( empty( $inline ) ) {
+			return;
+		}
+
+		if ( ! $this->_file_exists( $relative_path ) ) {
+			return;
+		}
+
+		$filename = $this->_get_filename( $relative_path );
+
+		ob_start();
+		include $filename;
+		$css = ob_get_clean();
+
+		wp_add_inline_style( $handle, $css );
+
+		$style_handle = $handle;
+
+		add_filter( 'style_loader_tag', function ( $tag, $handle ) use ( $style_handle ) {
+			if ( $style_handle == $handle ) {
+				$tag = '';
+			}
+
+			return $tag;
+		}, 10, 2 );
+	}
+
+	protected function _make_inline_script( $inline, $handle, $relative_path ) {
+		if ( empty( $inline ) ) {
+			return;
+		}
+
+		if ( ! $this->_file_exists( $relative_path ) ) {
+			return;
+		}
+
+		$filename = $this->_get_filename( $relative_path );
+
+		ob_start();
+		include $filename;
+		$css = ob_get_clean();
+
+		wp_add_inline_script( $handle, $css );
+
+		add_filter( 'wp_script_attributes', function ( $attributes ) use ( $handle ) {
+			if ( ! empty( $attributes['id'] ) && "{$handle}-js" == $attributes['id'] ) {
+				$attributes['src'] = '';
+			}
+
+			return $attributes;
+		} );
 	}
 
 	protected function _parse_style_args( $args ) {
@@ -118,6 +180,8 @@ abstract class Enqueue {
 		$parsed_args['version'] = $this->_get_file_version( $relative_path );
 
 		$parsed_args['relative_path'] = $relative_path;
+
+		$parsed_args['inline'] = ! empty( $args['inline'] ) ? $args['inline'] : false;
 
 		return $parsed_args;
 	}
