@@ -22,6 +22,10 @@ abstract class Enqueue {
 
 		extract( $parsed_args );
 
+		if ( $this->_can_make_inline( $inline, $relative_path ) ) {
+			$src = false;
+		}
+
 		wp_register_style( $handle, $src, $deps, $version, $media );
 
 		$this->_make_inline_style( $inline, $handle, $relative_path );
@@ -35,6 +39,10 @@ abstract class Enqueue {
 
 		extract( $parsed_args );
 
+		if ( $this->_can_make_inline( $inline, $relative_path ) ) {
+			$src = false;
+		}
+
 		wp_register_script( $handle, $src, $deps, $version, $in_footer );
 
 		$this->_make_inline_script( $inline, $handle, $relative_path );
@@ -44,26 +52,26 @@ abstract class Enqueue {
 	 * @param $args array
 	 */
 	protected function _enqueue_style( $args ) {
+		$this->_register_style( $args );
+
 		$parsed_args = $this->_parse_style_args( $args );
 
 		extract( $parsed_args );
 
 		wp_enqueue_style( $handle, $src, $deps, $version, $media );
-
-		$this->_make_inline_style( $inline, $handle, $relative_path );
 	}
 
 	/**
 	 * @param $args array
 	 */
 	protected function _enqueue_script( $args ) {
+		$this->_register_script( $args );
+
 		$parsed_args = $this->_parse_script_args( $args );
 
 		extract( $parsed_args );
 
 		wp_enqueue_script( $handle, $src, $deps, $version, $in_footer );
-
-		$this->_make_inline_script( $inline, $handle, $relative_path );
 	}
 
 	protected function _print_styles_inline( $args ) {
@@ -94,12 +102,20 @@ abstract class Enqueue {
 		<?php
 	}
 
-	protected function _make_inline_style( $inline, $handle, $relative_path ) {
+	protected function _can_make_inline( $inline, $relative_path ) {
 		if ( empty( $inline ) ) {
-			return;
+			return false;
 		}
 
 		if ( ! $this->_file_exists( $relative_path ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	protected function _make_inline_style( $inline, $handle, $relative_path ) {
+		if ( ! $this->_can_make_inline( $inline, $relative_path ) ) {
 			return;
 		}
 
@@ -110,24 +126,10 @@ abstract class Enqueue {
 		$css = ob_get_clean();
 
 		wp_add_inline_style( $handle, $css );
-
-		$style_handle = $handle;
-
-		add_filter( 'style_loader_tag', function ( $tag, $handle ) use ( $style_handle ) {
-			if ( $style_handle == $handle ) {
-				$tag = '';
-			}
-
-			return $tag;
-		}, 10, 2 );
 	}
 
 	protected function _make_inline_script( $inline, $handle, $relative_path ) {
-		if ( empty( $inline ) ) {
-			return;
-		}
-
-		if ( ! $this->_file_exists( $relative_path ) ) {
+		if ( ! $this->_can_make_inline( $inline, $relative_path ) ) {
 			return;
 		}
 
@@ -138,14 +140,6 @@ abstract class Enqueue {
 		$css = ob_get_clean();
 
 		wp_add_inline_script( $handle, $css );
-
-		add_filter( 'wp_script_attributes', function ( $attributes ) use ( $handle ) {
-			if ( ! empty( $attributes['id'] ) && "{$handle}-js" == $attributes['id'] ) {
-				$attributes['src'] = '';
-			}
-
-			return $attributes;
-		} );
 	}
 
 	protected function _parse_style_args( $args ) {
