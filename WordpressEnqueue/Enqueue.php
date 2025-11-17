@@ -41,6 +41,10 @@ abstract class Enqueue {
 
 		if ( $this->_can_make_inline( $inline, $relative_path ) ) {
 			$src = false;
+
+			if ( $inline && ! empty( $in_footer['strategy'] ) ) {
+				unset( $in_footer['strategy'] );
+			}
 		}
 
 		wp_register_script( $handle, $src, $deps, $version, $in_footer );
