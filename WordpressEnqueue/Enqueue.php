@@ -111,6 +111,10 @@ abstract class Enqueue {
 			return false;
 		}
 
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			return false;
+		}
+
 		return true;
 	}
 
